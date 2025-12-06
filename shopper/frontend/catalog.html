@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Каталог товаров</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="header">
+    <h1>Каталог товаров</h1>
+</header>
+
+<nav class="navbar">
+    <a href="index.html">Главная</a>
+    <a href="catalog.html">Каталог</a>
+    <a href="cart.html">Корзина</a>
+</nav>
+
+<main class="content">
+    <div id="products" class="product-grid">Загрузка...</div>
+</main>
+
+<script>
+// Функция для форматирования цены
+function formatPrice(price) {
+    return new Intl.NumberFormat('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(price);
+}
+
+async function loadProducts() {
+    try {
+        const res = await fetch("/api/products");
+        const products = await res.json();
+
+        const container = document.getElementById("products");
+        container.innerHTML = "";
+
+        products.forEach(p => {
+            const el = document.createElement("div");
+            el.className = "product";
+
+            el.innerHTML = `
+                <img src="${p.image}" class="product-img">
+                <h3>${p.name}</h3>
+                <p class="price">${formatPrice(p.price)}</p>
+                <button onclick="addToCart(${p.id})">В корзину</button>
+            `;
+            container.appendChild(el);
+        });
+    } catch {
+        document.getElementById("products").innerHTML = "Ошибка загрузки товаров";
+    }
+}
+
+function addToCart(id) {
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    // Явно сохраняем как число
+    cart.push(Number(id));
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Товар добавлен в корзину!");
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>

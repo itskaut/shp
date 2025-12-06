@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: shopdb
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db_init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - shop-network
+    ports:
+      - "5432:5432"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  redis:
+    image: redis:7-alpine
+    networks:
+      - shop-network
+    ports:
+      - "6379:6379"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+  api:
+    build: ./api
+    environment:
+      PGHOST: db
+      PGUSER: postgres
+      PGPASSWORD: password
+      PGDATABASE: shopdb
+      PGPORT: 5432
+      REDIS_URL: redis://redis:6379
+      PORT: 4000
+    networks:
+      - shop-network
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+      - redis
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  frontend:
+    build: ./frontend
+    networks:
+      - shop-network
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+  adminer:
+    image: adminer
+    networks:
+      - shop-network
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+volumes:
+  db_data:
+
+networks:
+  shop-network:
+    driver: overlay
