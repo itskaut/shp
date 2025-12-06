@@ -1,4 +1,4 @@
-Shop course project - static frontend + API + Postgres + Redis + Adminer
+Shop course project - frontend + API + Postgres + Redis + Adminer
 ----------------------------------------------------------------------
 How to run (macOS / Linux / Windows with Docker Desktop):
 
@@ -13,4 +13,3 @@ How to run (macOS / Linux / Windows with Docker Desktop):
 Notes:
 - Cart is stored in browser localStorage. Checkout POSTs to /api/orders (demo).
 # shopper
-12345
