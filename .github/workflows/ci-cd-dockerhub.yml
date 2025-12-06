@@ -9,7 +9,7 @@ on:
 
 env:
   BUILD_CONTEXT: shopper         
-  IMAGE_REPO: ${{ secrets.IMAGE_REPO || 'shopper' }}
+  IMAGE_REPO: shopper
 
 jobs:
   build-and-push:
