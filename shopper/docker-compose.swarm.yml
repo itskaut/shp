@@ -31,7 +31,7 @@ services:
         condition: on-failure
 
   api:
-    build: ./api
+    image: itskaut/shopper:api-latest
     environment:
       PGHOST: db
       PGUSER: postgres
@@ -53,11 +53,11 @@ services:
         condition: on-failure
 
   frontend:
-    build: ./frontend
+    image: itskaut/shopper:frontend-latest
     networks:
       - shop-network
     ports:
-      - "80:80"
+      - "3000:80"
     depends_on:
       - api
     deploy:
